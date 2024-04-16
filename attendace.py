@@ -54,7 +54,6 @@ while True:
     rgb_small_frame = small_frame[:, :, ::-1]
     now = datetime.now()
 
-
     if s:
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
@@ -79,7 +78,6 @@ while True:
                 # Draw a box around the face
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
-                # Highlighting the facial features
                 # Highlighting the facial features
                 #for facial_feature in ['left_eye', 'right_eye', 'top_lip', 'bottom_lip', 'nose_bridge', 'nose_tip']:
                     #points = [(x * 4, y * 4) for (x, y) in face_landmarks[facial_feature]]
