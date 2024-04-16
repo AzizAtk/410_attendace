@@ -53,8 +53,7 @@ while True:
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
     rgb_small_frame = small_frame[:, :, ::-1]
     now = datetime.now()
-    frame_skip = 5  # Only process every 5th frame
-    count = 0
+
 
     if s:
         face_locations = face_recognition.face_locations(rgb_small_frame)
