@@ -57,12 +57,15 @@ while True:
     if s:
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        face_landmarks_list = face_recognition.face_landmarks(rgb_small_frame)
+
+        if not face_locations:
+            cv2.putText(frame, "Come closer to the camera", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        
         face_names = []
 
-        for face_location, face_encoding, face_landmarks in zip(face_locations, face_encodings, face_landmarks_list):
+        for face_location, face_encoding in zip(face_locations, face_encodings):
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = ""
+            name = "Unknown Student"
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
 
@@ -71,31 +74,27 @@ while True:
                 accuracy = (1 - face_distances[best_match_index]) * 100  # Accuracy as a percentage
 
             face_names.append(name)
-            if name:
-                # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-                top, right, bottom, left = [x * 4 for x in face_location]
+            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            top, right, bottom, left = [x * 4 for x in face_location]
 
-                # Draw a box around the face
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            # Draw a box around the face
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
-                # Highlighting the facial features
-                #for facial_feature in ['left_eye', 'right_eye', 'top_lip', 'bottom_lip', 'nose_bridge', 'nose_tip']:
-                    #points = [(x * 4, y * 4) for (x, y) in face_landmarks[facial_feature]]
-                    #cv2.polylines(frame, [np.array(points, dtype=np.int32)], isClosed=False, color=(255, 255, 0), thickness=1)
+            # Draw label with a name and accuracy below the face
+            font = cv2.FONT_HERSHEY_DUPLEX
+            text = f"{name} ({accuracy:.2f}%)"
+            cv2.putText(frame, text, (left + 6, bottom + 20), font, 0.5, (255, 255, 255), 1)
 
-
-                # Draw label with a name and accuracy below the face
-                #cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                text = f"{name} ({accuracy:.2f}%)"
-                cv2.putText(frame, text, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-
+            if name == "Unknown Student":
+                cv2.putText(frame, "Hold still", (left, top - 10), font, 0.5, (0, 255, 0), 2)
+            else:
+                cv2.putText(frame, f"{name} is present", (left, top - 10), font, 0.5, (0, 255, 0), 2)
                 if name in students:
                     students.remove(name)
                     current_time = now.strftime("%H-%M-%S")
                     lnwriter.writerow([name, current_time])
 
-    cv2.imshow("attendance system", frame)
+    cv2.imshow("Attendance System", frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
