@@ -1,16 +1,21 @@
 import cv2
 import os
 
-# Ask for the student's name
-student_name = input("Enter the student's name: ")
-
-# Create a directory for the student if it doesn't exist
-directory = f"./{student_name}"
-if not os.path.exists(directory):
-    os.makedirs(directory)
+def create_student_directory():
+    # Ask for the student's name
+    student_name = input("Enter the student's name: ")
+    
+    # Create a directory for the student if it doesn't exist
+    directory = f"./{student_name}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    return directory
 
 # Initialize the webcam
 cap = cv2.VideoCapture(0)
+
+# Initialize the first student's directory
+directory = create_student_directory()
 
 # Counter for the image file names
 image_counter = 1
@@ -54,6 +59,10 @@ while True:
         cv2.imwrite(image_path.replace(".png", "_resized.png"), resized_frame)
         print(f"Original and processed images saved: {image_path}")
         image_counter += 1
+    elif key == 118:  # ASCII value of 'v'
+        # Ask for new student's name and create a directory
+        directory = create_student_directory()
+        image_counter = 1  # Reset the image counter for the new student
     elif key == 27:  # ASCII value of ESC
         break
 
